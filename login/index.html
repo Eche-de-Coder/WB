@@ -253,7 +253,9 @@
     if (params.get('error') === 'not_registered') {
       showAlert('No account found. Please sign up first.');
     }
-    
+
+    import { initSupabase } from '/js/supabase.js';
+    const sb = await initSupabase();
     
     function showAlert(msg, type = 'error') {
       const el = document.getElementById('alert');
