@@ -172,7 +172,7 @@
             <div class="space-y-xs">
               <div class="flex justify-between items-center px-1">
                 <label class="font-label-sm text-label-sm text-on-surface-variant" for="password">Password</label>
-                <a class="text-label-sm font-label-sm text-primary hover:underline transition-all" href="../forgot-password/">Forgot Password?</a>
+                <a class="text-label-sm font-label-sm text-primary hover:underline transition-all" href="../forgotpassword">Forgot Password?</a>
               </div>
               <div class="relative group">
                 <div class="absolute inset-y-0 left-0 pl-md flex items-center pointer-events-none text-outline group-focus-within:text-primary transition-colors">
@@ -244,18 +244,11 @@
   </div>
   
   <script>
-    /**(async () => {
+   /** (async () => {
       const { data: { session } } = await sb.auth.getSession();
-      if (session) window.location.href = '../dashboard/';
+      if (session) window.location.href = '../profile';
     })();**/
-    // Show error if redirected from dashboard due to unregistered Google login
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('error') === 'not_registered') {
-      showAlert('No account found. Please sign up first.');
-    }
-
-    import { initSupabase } from '/js/supabase.js';
-    const sb = await initSupabase();
+    
     
     function showAlert(msg, type = 'error') {
       const el = document.getElementById('alert');
@@ -286,7 +279,7 @@
         btn.innerHTML = 'Login <span class="material-symbols-outlined text-[20px]">arrow_forward</span>';
       } else {
         showAlert('Success! Redirecting…', 'success');
-        setTimeout(() => window.location.href = '../dashboard/', 800);
+        setTimeout(() => window.location.href = '../profile', 800);
       }
     }
     
