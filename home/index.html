@@ -811,7 +811,7 @@
     }
     
     // Boot
-    fetchProducts();
+    window.__sbReady.then(() => fetchProducts());
     
     /* ── Buy flow ── */
     let currentProduct = null;
