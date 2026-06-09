@@ -1,1 +1,957 @@
-.
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Working Boys - Home</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <script type="module" src="../js/supabase.js"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-tint": "#006d38",
+            "inverse-primary": "#59df89",
+            "on-surface-variant": "#3d4a3f",
+            "surface-container-highest": "#e2e2e5",
+            "on-surface": "#1a1c1e",
+            "surface-container-high": "#e8e8ea",
+            "surface-container": "#eeeef0",
+            "outline": "#6d7b6e",
+            "secondary": "#1d4cdc",
+            "inverse-on-surface": "#f0f0f3",
+            "primary-container": "#00a859",
+            "surface-variant": "#e2e2e5",
+            "surface-container-low": "#f3f3f6",
+            "on-background": "#1a1c1e",
+            "surface-container-lowest": "#ffffff",
+            "primary": "#006d38",
+            "error-container": "#ffdad6",
+            "inverse-surface": "#2f3133",
+            "on-tertiary": "#ffffff",
+            "on-secondary-fixed-variant": "#0037b9",
+            "on-primary-container": "#003317",
+            "on-error": "#ffffff",
+            "tertiary-container": "#be8800",
+            "error": "#ba1a1a",
+            "on-tertiary-fixed-variant": "#5e4200",
+            "on-primary-fixed-variant": "#005228",
+            "surface": "#f9f9fc",
+            "primary-fixed": "#77fca3",
+            "secondary-fixed-dim": "#b8c4ff",
+            "secondary-fixed": "#dde1ff",
+            "tertiary-fixed-dim": "#ffba20",
+            "on-secondary": "#ffffff",
+            "on-tertiary-container": "#3a2700",
+            "secondary-container": "#4068f6",
+            "on-error-container": "#93000a",
+            "on-primary": "#ffffff",
+            "on-primary-fixed": "#00210d",
+            "on-secondary-container": "#fffbff",
+            "tertiary-fixed": "#ffdea8",
+            "surface-dim": "#dadadc",
+            "tertiary": "#7c5800",
+            "background": "#f9f9fc",
+            "surface-bright": "#f9f9fc",
+            "outline-variant": "#bccabc",
+            "on-secondary-fixed": "#001453",
+            "primary-fixed-dim": "#59df89"
+          },
+          "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+          "spacing": { "gutter": "16px", "lg": "40px", "xl": "64px", "sm": "12px", "margin": "20px", "md": "24px", "xs": "4px", "base": "8px" },
+          "fontFamily": { "h1": ["Plus Jakarta Sans"], "h3": ["Plus Jakarta Sans"], "body-lg": ["Manrope"], "h2": ["Plus Jakarta Sans"], "button": ["Plus Jakarta Sans"], "label-sm": ["Manrope"], "body-md": ["Manrope"] },
+          "fontSize": {
+            "h1": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "h3": ["24px", { "lineHeight": "1.3", "fontWeight": "700" }],
+            "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "h2": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "button": ["16px", { "lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "700" }],
+            "label-sm": ["14px", { "lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "600" }],
+            "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24
+    }
+    
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none
+    }
+    
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none
+    }
+    
+    body {
+      min-height: max(884px, 100dvh)
+    }
+    
+    .nav-active {
+      color: #006d38 !important
+    }
+    
+    .nav-active-bg {
+      background: rgba(0, 109, 56, 0.06);
+      border-radius: .75rem
+    }
+    
+    /* Seller popover */
+    .seller-popover {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 1px solid #e2e2e5;
+      border-radius: .75rem;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+      padding: 1rem;
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(6px);
+      transition: opacity .2s ease, transform .2s ease;
+      min-width: 220px;
+    }
+    
+    .seller-trigger:hover .seller-popover,
+    .seller-popover.open {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateY(0);
+    }
+    
+    /* Skeleton loading */
+    @keyframes shimmer {
+      0% {
+        background-position: -400px 0
+      }
+      
+      100% {
+        background-position: 400px 0
+      }
+    }
+    
+    .skeleton {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 800px 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: .5rem;
+    }
+    
+    
+    /* The image wrapper needs to be the clipping parent */
+    .product-img-wrap {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 1;
+    }
+    
+    /* Description slides up inside the image area */
+    .product-desc {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 0.875rem 1rem;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      max-height: 85%;
+      overflow-y: auto;
+    }
+    
+    .product-desc.open {
+      transform: translateY(0%);
+    }
+  </style>
+</head>
+
+<body class="bg-background text-on-background font-body-md">
+  
+  <!-- ══════════════════════════════════════
+     HEADER
+══════════════════════════════════════ -->
+  <header class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-sm fixed top-0 z-50 w-full">
+    <div class="flex justify-between items-center px-4 h-16 w-full max-w-7xl mx-auto">
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400">storefront</span>
+          <h1 class="font-['Plus_Jakarta_Sans'] font-bold text-lg tracking-tight text-emerald-600 dark:text-emerald-400">Working Boys</h1>
+        </div>
+      </div>
+      <div class="hidden md:flex items-center gap-6">
+        <a class="text-emerald-600 dark:text-emerald-400 font-button" href="../home/">Home</a>
+        <a class="text-slate-500 dark:text-slate-400 hover:text-emerald-600 transition-colors font-['Plus_Jakarta_Sans']" href="../stores">Stores</a>
+        <a class="text-slate-500 dark:text-slate-400 hover:text-emerald-600 transition-colors font-['Plus_Jakarta_Sans']" href="#">Orders</a>
+        <a class="text-slate-500 dark:text-slate-400 hover:text-emerald-600 transition-colors font-['Plus_Jakarta_Sans']" href="../profile/">Profile</a>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="searchBtn" class="transition-all duration-200 active:scale-95 p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800">
+          <span class="material-symbols-outlined text-slate-500">search</span>
+        </button>
+        <button id="theme-toggle" class="p-2 text-slate-500 hover:bg-slate-50 transition-colors active:scale-95 rounded-full">
+          <span class="material-symbols-outlined dark:hidden">dark_mode</span>
+          <span class="material-symbols-outlined hidden dark:block">light_mode</span>
+        </button>
+        <a href="../profile/" class="w-9 h-9 rounded-full overflow-hidden border-2 border-primary-container flex-shrink-0">
+          <div id="headerAvatar" class="w-full h-full bg-primary-container flex items-center justify-center text-white font-bold text-sm">?</div>
+        </a>
+      </div>
+    </div>
+  </header>
+  
+  <!-- ══════════════════════════════════════
+     MAIN
+══════════════════════════════════════ -->
+  <main class="pt-20 pb-28 max-w-7xl mx-auto px-4">
+    
+    <!-- Search & Filter -->
+    <section class="mb-8 mt-4">
+      <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col gap-6">
+        <div class="flex flex-col md:flex-row gap-4 items-center">
+          <div class="relative flex-grow w-full">
+            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+            <input id="searchInput" class="w-full pl-12 pr-4 py-4 bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-primary/20 font-body-md transition-all" placeholder="Search products or stores" type="text" oninput="applyFilters()" />
+          </div>
+          <button onclick="resetFilters()" class="flex items-center gap-2 bg-primary text-on-primary px-6 py-4 rounded-xl font-button transition-all hover:bg-surface-tint active:scale-95 w-full md:w-auto justify-center">
+            <span class="material-symbols-outlined">filter_list_off</span> Reset
+          </button>
+        </div>
+        
+        <!-- Category pills -->
+        <div class="flex gap-4 overflow-x-auto hide-scrollbar pb-2">
+          <div class="cat-pill active flex flex-col items-center gap-2 min-w-[72px] cursor-pointer" data-cat="all" onclick="selectCategory(this)">
+            <div class="cat-icon w-14 h-14 rounded-2xl bg-primary text-white flex items-center justify-center shadow-sm transition-all">
+              <span class="material-symbols-outlined text-2xl">apps</span>
+            </div>
+            <span class="font-label-sm text-on-surface-variant">All</span>
+          </div>
+          <div class="cat-pill flex flex-col items-center gap-2 min-w-[72px] cursor-pointer" data-cat="fashion" onclick="selectCategory(this)">
+            <div class="cat-icon w-14 h-14 rounded-2xl bg-emerald-50 text-primary flex items-center justify-center shadow-sm transition-all">
+              <span class="material-symbols-outlined text-2xl">checkroom</span>
+            </div>
+            <span class="font-label-sm text-on-surface-variant">Fashion</span>
+          </div>
+          <div class="cat-pill flex flex-col items-center gap-2 min-w-[72px] cursor-pointer" data-cat="tech" onclick="selectCategory(this)">
+            <div class="cat-icon w-14 h-14 rounded-2xl bg-emerald-50 text-primary flex items-center justify-center shadow-sm transition-all">
+              <span class="material-symbols-outlined text-2xl">devices</span>
+            </div>
+            <span class="font-label-sm text-on-surface-variant">Tech</span>
+          </div>
+          <div class="cat-pill flex flex-col items-center gap-2 min-w-[72px] cursor-pointer" data-cat="home" onclick="selectCategory(this)">
+            <div class="cat-icon w-14 h-14 rounded-2xl bg-emerald-50 text-primary flex items-center justify-center shadow-sm transition-all">
+              <span class="material-symbols-outlined text-2xl">home</span>
+            </div>
+            <span class="font-label-sm text-on-surface-variant">Home</span>
+          </div>
+          <div class="cat-pill flex flex-col items-center gap-2 min-w-[72px] cursor-pointer" data-cat="food" onclick="selectCategory(this)">
+            <div class="cat-icon w-14 h-14 rounded-2xl bg-emerald-50 text-primary flex items-center justify-center shadow-sm transition-all">
+              <span class="material-symbols-outlined text-2xl">restaurant</span>
+            </div>
+            <span class="font-label-sm text-on-surface-variant">Food</span>
+          </div>
+          <div class="cat-pill flex flex-col items-center gap-2 min-w-[72px] cursor-pointer" data-cat="beauty" onclick="selectCategory(this)">
+            <div class="cat-icon w-14 h-14 rounded-2xl bg-emerald-50 text-primary flex items-center justify-center shadow-sm transition-all">
+              <span class="material-symbols-outlined text-2xl">spa</span>
+            </div>
+            <span class="font-label-sm text-on-surface-variant">Beauty</span>
+          </div>
+        </div>
+        
+        <!-- Sub-filters -->
+        <div class="flex flex-wrap gap-4 pt-4 border-t border-slate-100">
+          <div class="flex flex-col gap-1 flex-1 min-w-[150px]">
+            <label class="font-label-sm text-slate-500">Sort by</label>
+            <select id="sortSelect" class="bg-white border border-slate-200 rounded-lg py-2 px-3 text-body-md focus:ring-primary focus:border-primary" onchange="applyFilters()">
+              <option value="newest">Newest</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+            </select>
+          </div>
+          <div class="flex flex-col gap-1 flex-1 min-w-[200px]">
+            <label class="font-label-sm text-slate-500">Price Range (₦)</label>
+            <div class="flex items-center gap-2">
+              <input id="priceMin" class="w-full bg-white border border-slate-200 rounded-lg py-2 px-3 text-body-md" placeholder="Min" type="number" oninput="applyFilters()" />
+              <span class="text-slate-400">—</span>
+              <input id="priceMax" class="w-full bg-white border border-slate-200 rounded-lg py-2 px-3 text-body-md" placeholder="Max" type="number" oninput="applyFilters()" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Results count -->
+    <div class="flex items-center justify-between mb-4">
+      <p id="resultsCount" class="font-label-sm text-on-surface-variant"></p>
+    </div>
+    
+    <!-- Skeleton loaders (shown while fetching) -->
+    <div id="skeletonGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div class="bg-white rounded-xl border border-slate-100 overflow-hidden">
+        <div class="skeleton aspect-square"></div>
+        <div class="p-4 space-y-2">
+          <div class="skeleton h-4 w-3/4"></div>
+          <div class="skeleton h-4 w-1/2"></div>
+          <div class="skeleton h-3 w-2/3 mt-3"></div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl border border-slate-100 overflow-hidden hidden sm:block">
+        <div class="skeleton aspect-square"></div>
+        <div class="p-4 space-y-2">
+          <div class="skeleton h-4 w-3/4"></div>
+          <div class="skeleton h-4 w-1/2"></div>
+          <div class="skeleton h-3 w-2/3 mt-3"></div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl border border-slate-100 overflow-hidden hidden lg:block">
+        <div class="skeleton aspect-square"></div>
+        <div class="p-4 space-y-2">
+          <div class="skeleton h-4 w-3/4"></div>
+          <div class="skeleton h-4 w-1/2"></div>
+          <div class="skeleton h-3 w-2/3 mt-3"></div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl border border-slate-100 overflow-hidden hidden xl:block">
+        <div class="skeleton aspect-square"></div>
+        <div class="p-4 space-y-2">
+          <div class="skeleton h-4 w-3/4"></div>
+          <div class="skeleton h-4 w-1/2"></div>
+          <div class="skeleton h-3 w-2/3 mt-3"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Real product grid -->
+    <section id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 hidden"></section>
+    
+    <!-- Empty state -->
+    <div id="emptyState" class="hidden text-center py-20">
+      <span class="material-symbols-outlined text-6xl text-slate-200 mb-4 block">search_off</span>
+      <p class="font-h3 text-on-surface-variant">No products found</p>
+      <p class="font-body-md text-slate-400 mt-2">Try adjusting your filters or search term</p>
+      <button onclick="resetFilters()" class="mt-6 px-6 py-3 bg-primary text-white font-button rounded-xl active:scale-95 transition-transform">Reset Filters</button>
+    </div>
+    
+    <!-- No products at all -->
+    <div id="noProductsState" class="hidden text-center py-24">
+      <span class="material-symbols-outlined text-6xl text-slate-200 mb-4 block">inventory_2</span>
+      <p class="font-h3 text-on-surface-variant mb-2">The marketplace is empty</p>
+      <p class="font-body-md text-slate-400">Be the first to list a product!</p>
+      <a href="../profile/" class="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-primary text-white font-button rounded-xl active:scale-95 transition-transform">
+        <span class="material-symbols-outlined text-[18px]">add_circle</span> Add a Product
+      </a>
+    </div>
+    
+  </main>
+  
+  <!-- BOTTOM NAV -->
+  <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-100 dark:border-slate-800 shadow-[0_-4px_10px_0_rgba(0,168,89,0.04)] md:hidden">
+    <a href="#" class="flex flex-col items-center justify-center nav-active nav-active-bg px-3 py-1 transition-transform active:scale-90">
+      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">home</span>
+      <span class="font-['Plus_Jakarta_Sans'] font-semibold text-[10px]">Home</span>
+    </a>
+    <a href="../stores" class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:text-emerald-500 transition-transform active:scale-90 px-3 py-1">
+      <span class="material-symbols-outlined">store</span>
+      <span class="font-['Plus_Jakarta_Sans'] font-semibold text-[10px]">Stores</span>
+    </a>
+    <a href="#" class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:text-emerald-500 transition-transform active:scale-90 px-3 py-1">
+      <span class="material-symbols-outlined">receipt_long</span>
+      <span class="font-['Plus_Jakarta_Hans'] font-semibold text-[10px]">Orders</span>
+    </a>
+    <a href="../profile/" class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:text-emerald-500 transition-transform active:scale-90 px-3 py-1">
+      <span class="material-symbols-outlined">person</span>
+      <span class="font-['Plus_Jakarta_Sans'] font-semibold text-[10px]">Profile</span>
+    </a>
+  </nav>
+  
+  <footer class="hidden md:block bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 w-full py-12">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
+      <div class="flex flex-col gap-2">
+        <p class="text-emerald-600 font-bold font-['Plus_Jakarta_Sans']">Working Boys</p>
+        <p class="font-['Plus_Jakarta_Sans'] text-sm text-slate-500">© 2026 Working Boys. Empowering Nigerian Excellence.</p>
+      </div>
+      <div class="flex gap-6">
+        <a class="font-['Plus_Jakarta_Sans'] text-sm text-slate-500 hover:text-emerald-600 transition-colors" href="#">Privacy Policy</a>
+        <a class="font-['Plus_Jakarta_Sans'] text-sm text-slate-500 hover:text-emerald-600 transition-colors" href="#">Terms of Service</a>
+        <a class="font-['Plus_Jakarta_Sans'] text-sm text-slate-500 hover:text-emerald-600 transition-colors" href="#">Help Center</a>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- Buy Modal -->
+  <div id="buyModal" class="fixed inset-0 bg-black/50 z-[200] flex items-end sm:items-center justify-center p-4 hidden">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden" style="animation:slideUp .25s ease">
+      <!-- Product summary banner -->
+      <div class="bg-primary p-5 text-white flex items-center gap-4">
+        <div id="buyModalCover" class="w-14 h-14 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0 overflow-hidden">
+          <span class="material-symbols-outlined text-2xl">inventory_2</span>
+        </div>
+        <div class="min-w-0">
+          <p class="font-bold text-base leading-tight truncate" id="buyModalName">Product Name</p>
+          <p class="text-primary-fixed font-bold text-xl mt-0.5" id="buyModalPrice">₦0</p>
+        </div>
+      </div>
+      <!-- Form -->
+      <div class="p-5 space-y-4">
+        <div id="buyAlert" class="hidden px-4 py-3 rounded-xl text-[13px] font-semibold"></div>
+        <div>
+          <label class="block text-[11px] uppercase tracking-wider font-bold text-slate-400 mb-1">Your Email *</label>
+          <p class="text-[11px] text-slate-400 mb-2">The product will be sent to this email after payment.</p>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">mail</span>
+            <input id="buyerEmail" type="email" placeholder="you@example.com" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-body-md" />
+          </div>
+        </div>
+        <div class="bg-slate-50 rounded-xl p-4 space-y-2">
+          <div class="flex justify-between text-sm">
+            <span class="text-slate-500">Product price</span>
+            <span class="font-semibold" id="buyBreakdownPrice">₦0</span>
+          </div>
+          <div class="flex justify-between text-sm border-t border-slate-100 pt-2 mt-2">
+            <span class="font-bold text-on-background">Total</span>
+            <span class="font-bold text-primary text-base" id="buyBreakdownTotal">₦0</span>
+          </div>
+        </div>
+        <button id="payBtn" onclick="initiatePayment()" class="w-full py-4 bg-primary text-white font-button rounded-xl hover:bg-surface-tint active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-[20px]">lock</span>
+          Pay Securely with Paystack
+        </button>
+        <button onclick="closeBuyModal()" class="w-full py-3 text-slate-400 text-sm hover:text-on-surface transition-colors">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  
+  <script>
+    const PLATFORM_CUT_PERCENT = 10; // 10% goes to you, 90% to seller
+    const PAYSTACK_PUBLIC_KEY = 'pk_live_156f22bd71f675814e786c01d6fdf0aea8f70df1';
+    
+    let allProducts = []; // full fetched list
+    let activeCategory = 'all';
+    const sellerCache = {};
+    
+    /* ── Theme ── */
+    const html = document.documentElement;
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) html.classList.add('dark');
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    });
+    
+    const searchInput = document.getElementById('searchInput')
+    const searchBtn = document.getElementById('searchBtn')
+    searchBtn.addEventListener('click', () => {
+      searchInput.focus();
+    });
+    
+    /* ── Auth guard + avatar ── */
+    (async () => {
+      const { data: { session } } = await sb.auth.getSession();
+      const meta = session.user.user_metadata || {};
+      const first = meta.first_name || session.user.email?.[0] || '?';
+      const last = meta.last_name || '';
+      const initials = ((first[0] || '') + (last[0] || '')).toUpperCase();
+      document.getElementById('headerAvatar').textContent = initials;
+    })();
+    
+    /* ── Fetch products ── */
+    async function fetchProducts() {
+      // Join: products → stores → profiles (owner)
+      const { data, error } = await sb
+        .from('products')
+        .select(`
+      id, name, price, category, description, is_published, created_at,
+      store_id, images, file_path,
+      stores ( id, name, slug, owner_id,
+        profiles ( id, first_name, last_name, username, created_at )
+      )
+    `)
+        .eq('is_published', true)
+        .order('created_at', { ascending: false });
+      
+      document.getElementById('skeletonGrid').classList.add('hidden');
+      
+      if (error || !data || data.length === 0) {
+        document.getElementById('noProductsState').classList.remove('hidden');
+        return;
+      }
+      
+      allProducts = data;
+      // Pre-fetch seller stats for unique owners
+      const ownerIds = [...new Set(data.map(p => p.stores?.owner_id).filter(Boolean))];
+      await Promise.all(ownerIds.map(fetchSellerStats));
+      
+      renderProducts(allProducts);
+    }
+    
+    /* ── Fetch seller stats (product count + store count) ── */
+    async function fetchSellerStats(ownerId) {
+      if (sellerCache[ownerId]) return;
+      const [{ count: pCount }, { count: sCount }] = await Promise.all([
+        sb.from('products').select('id', { count: 'exact', head: true }).eq('owner_id', ownerId).eq('is_published', true),
+        sb.from('stores').select('id', { count: 'exact', head: true }).eq('owner_id', ownerId).eq('is_active', true),
+      ]);
+      sellerCache[ownerId] = { products: pCount || 0, stores: sCount || 0 };
+    }
+    
+    /* ── Render products ── */
+    async function renderProducts(products) {
+      const grid = document.getElementById('productGrid');
+      grid.classList.remove('hidden');
+      grid.innerHTML = '';
+      
+      if (products.length === 0) {
+        document.getElementById('emptyState').classList.remove('hidden');
+        document.getElementById('resultsCount').textContent = '';
+        return;
+      }
+      
+      document.getElementById('emptyState').classList.add('hidden');
+      document.getElementById('resultsCount').textContent = `Showing ${products.length} product${products.length !== 1 ? 's' : ''}`;
+      
+      products.forEach(p => {
+        const store = p.stores || {};
+        const owner = store.profiles || {};
+        const ownerId = store.owner_id;
+        const stats = sellerCache[ownerId] || { products: 0, stores: 0 };
+        const ownerName = [owner.first_name, owner.last_name].filter(Boolean).join(' ') || owner.username || 'Unknown Seller';
+        const ownerInitials = ((owner.first_name?.[0] || '') + (owner.last_name?.[0] || '')).toUpperCase() || '?';
+        const joinedDate = owner.created_at ?
+          new Date(owner.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) :
+          '—';
+        const coverUrl = p.images?.[0] || '';
+        const imgHtml = coverUrl ?
+          `<img src="${p.images}" alt="${escHtml(p.name)}"
+              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+         <div style="display:none" class="w-full h-full flex items-center justify-center">
+           <span class="material-symbols-outlined text-6xl text-slate-200">inventory_2</span>
+         </div>` :
+          `<span class="material-symbols-outlined text-6xl text-slate-200 group-hover:scale-110 transition-transform duration-500">inventory_2</span>`;
+        
+        const card = document.createElement('div');
+        card.className = 'product-card bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-all group flex flex-col h-full';
+        card.dataset.name = p.name;
+        card.dataset.price = p.price;
+        card.dataset.cat = p.category || 'other';
+        card.dataset.seller = ownerName;
+        
+        /**card.innerHTML = `
+      <div class="relative aspect-square overflow-hidden bg-slate-100 flex items-center justify-center">
+        ${imgHtml}
+        <button class="absolute top-3 right-3 w-10 h-10 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-slate-400 hover:text-error transition-colors z-10">
+          <span class="material-symbols-outlined">favorite</span>
+        </button>
+        ${p.file_type ? `<div class="absolute bottom-3 left-3 bg-black/50 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-sm z-10">${escHtml(p.file_type)}</div>` : ''}
+      </div>
+      <div class="p-4 flex flex-col flex-grow">
+        <h3 class="font-h3 text-base text-on-surface leading-tight mb-1">${escHtml(p.name)}</h3>
+        <div class="flex items-center gap-2 mb-0">
+          <p class="text-primary font-bold text-lg shrink-0">₦${Number(p.price).toLocaleString()}</p>
+
+          <button onclick="toggleDesc(event, this)"
+            class="flex-1 h-9 rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors flex items-center px-3 gap-1.5 overflow-hidden min-w-0 group">
+            <span class="material-symbols-outlined text-[15px] text-slate-400 group-hover:text-primary transition-colors shrink-0 desc-icon">info</span>
+            <span class="text-[12px] text-slate-400 group-hover:text-primary transition-colors truncate font-label-sm">
+              ${escHtml((p.description || 'No description').slice(0, 28))}${(p.description || '').length > 28 ? '…' : ''}
+            </span>
+          </button>
+
+          <button class="shrink-0 flex items-center gap-1.5 bg-primary hover:bg-surface-tint text-white text-[13px] font-button px-4 py-2.5 rounded-xl active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-[15px]">shopping_bag</span> Buy
+          </button>
+        </div>
+        
+          <!-- Expanded description — shows below the price row -->
+  <div class="product-desc">
+    <p class="text-[13px] text-on-surface-variant leading-relaxed">
+      ${escHtml(p.description || 'No description provided.')}
+    </p>
+    ${p.file_type ? `<span class="inline-flex items-center gap-1 mt-2 text-[11px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">${escHtml(p.file_type)}</span>` : ''}
+  </div>
+        
+        <div class="mt-3 pt-3 border-t border-slate-50 relative seller-trigger" onclick="togglePopover(event, this)">
+          <div class="flex items-center gap-2 text-slate-500 cursor-pointer hover:text-primary transition-colors select-none">
+            <div class="w-6 h-6 rounded-full bg-primary-container flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">${escHtml(ownerInitials)}</div>
+            <span class="font-label-sm truncate">${escHtml(ownerName)}</span>
+            <span class="material-symbols-outlined text-[14px] text-slate-300 ml-auto flex-shrink-0">info</span>
+          </div>
+          <div class="seller-popover" onclick="event.stopPropagation()">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white font-bold text-base flex-shrink-0">${escHtml(ownerInitials)}</div>
+              <div>
+                <p class="font-bold text-on-background text-sm leading-tight">${escHtml(ownerName)}</p>
+                ${owner.username ? `<p class="text-[11px] text-on-surface-variant">@${escHtml(owner.username)}</p>` : ''}
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-2 mb-3">
+              <div class="text-center p-2 bg-surface-container-low rounded-lg">
+                <p class="font-bold text-primary text-base">${stats.products}</p>
+                <p class="text-[10px] text-on-surface-variant leading-tight">Products</p>
+              </div>
+              <div class="text-center p-2 bg-surface-container-low rounded-lg">
+                <p class="font-bold text-primary text-base">${stats.stores}</p>
+                <p class="text-[10px] text-on-surface-variant leading-tight">Stores</p>
+              </div>
+              <div class="text-center p-2 bg-surface-container-low rounded-lg">
+                <p class="font-bold text-primary text-base">0</p>
+                <p class="text-[10px] text-on-surface-variant leading-tight">Sales</p>
+              </div>
+            </div>
+            <div class="space-y-1.5">
+              <div class="flex items-center gap-2 text-[11px] text-on-surface-variant">
+                <span class="material-symbols-outlined text-[13px] text-primary">storefront</span>
+                Store: <span class="font-semibold text-on-background">${escHtml(store.name || '—')}</span>
+              </div>
+              <div class="flex items-center gap-2 text-[11px] text-on-surface-variant">
+                <span class="material-symbols-outlined text-[13px] text-primary">calendar_month</span>
+                Joined: <span class="font-semibold text-on-background">${joinedDate}</span>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>`;**/
+        
+        card.innerHTML = `
+        <div class="product-img-wrap">
+          ${imgHtml}
+          <button class="absolute top-3 right-3 w-10 h-10 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-slate-400 hover:text-error transition-colors z-10">
+            <span class="material-symbols-outlined">favorite</span>
+          </button>
+          ${p.file_type ? `<div class="absolute bottom-3 left-3 bg-black/50 text-white text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-sm z-10">${escHtml(p.file_type)}</div>` : ''}
+          
+          <!-- Description slides up INSIDE this image wrapper -->
+          <div class="product-desc">
+            <p class="text-[13px] font-semibold text-on-background mb-1">Product info:</p>
+            <p class="text-[12px] text-on-surface-variant leading-relaxed">
+              ${escHtml(p.description || 'No description provided.')}
+            </p>
+          </div>
+        </div>
+        
+        <!-- Card info — fixed, never grows -->
+        <div class="p-4 flex flex-col">
+          <h3 class="font-h3 text-base text-on-surface leading-tight mb-3">${escHtml(p.name)}</h3>
+          
+          <div class="flex items-center gap-2">
+            <p class="text-primary font-bold text-lg shrink-0">₦${Number(p.price).toLocaleString()}</p>
+            
+            <!-- This button triggers the slide-up -->
+            <button onclick="toggleDesc(event, this)" class="flex-1 h-9 rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors flex items-center px-3 gap-1.5 overflow-hidden min-w-0 group">
+              <span class="material-symbols-outlined text-[15px] text-slate-400 group-hover:text-primary transition-colors shrink-0 desc-icon">info</span>
+              <span class="text-[12px] text-slate-400 group-hover:text-primary transition-colors truncate font-label-sm">
+               View product info
+              </span>
+            </button>
+            
+           <button onclick="openBuyModal('${p.id}')"
+  class="shrink-0 flex items-center gap-1.5 bg-primary hover:bg-surface-tint text-white text-[13px] font-button px-4 py-2.5 rounded-xl active:scale-95 transition-all">
+  <span class="material-symbols-outlined text-[15px]">shopping_bag</span> Buy
+</button>
+          </div>
+          
+          <!-- Seller row -->
+          <div class="mt-3 pt-3 border-t border-slate-50 relative seller-trigger" onclick="togglePopover(event, this)">
+            <div class="flex items-center gap-2 text-slate-500 cursor-pointer hover:text-primary transition-colors select-none">
+              <div class="w-6 h-6 rounded-full bg-primary-container flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">${escHtml(ownerInitials)}</div>
+              <span class="font-label-sm truncate">${escHtml(ownerName)}</span>
+              <span class="material-symbols-outlined text-[14px] text-slate-300 ml-auto flex-shrink-0">info</span>
+            </div>
+            <div class="seller-popover" onclick="event.stopPropagation()">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white font-bold text-base flex-shrink-0">${escHtml(ownerInitials)}</div>
+                <div>
+                  <p class="font-bold text-on-background text-sm leading-tight">${escHtml(ownerName)}</p>
+                    ${owner.username ? `<p class="text-[11px] text-on-surface-variant">@${escHtml(owner.username)}</p>` : ''}
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-2 mb-3">
+                <div class="text-center p-2 bg-surface-container-low rounded-lg">
+                  <p class="font-bold text-primary text-base">${stats.products}</p>
+                  <p class="text-[10px] text-on-surface-variant leading-tight">Products</p>
+                </div>
+                <div class="text-center p-2 bg-surface-container-low rounded-lg">
+                  <p class="font-bold text-primary text-base">${stats.stores}</p>
+                  <p class="text-[10px] text-on-surface-variant leading-tight">Stores</p>
+                </div>
+                <div class="text-center p-2 bg-surface-container-low rounded-lg">
+                  <p class="font-bold text-primary text-base">${sales.length}</p>
+                  <p class="text-[10px] text-on-surface-variant leading-tight">Sales</p>
+                </div>
+              </div>
+              <div class="space-y-1.5">
+                <div class="flex items-center gap-2 text-[11px] text-on-surface-variant">
+                  <span class="material-symbols-outlined text-[13px] text-primary">storefront</span>
+                    Store: <span class="font-semibold text-on-background">${escHtml(store.name || '—')}</span>
+                </div>
+                <div class="flex items-center gap-2 text-[11px] text-on-surface-variant">
+                  <span class="material-symbols-outlined text-[13px] text-primary">calendar_month</span>
+                    Joined: <span class="font-semibold text-on-background">${joinedDate}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+        
+        grid.appendChild(card);
+      });
+    }
+    
+    /* ── Popover toggle (mobile tap / desktop hover fallback) ── */
+    function togglePopover(e, el) {
+      e.stopPropagation();
+      const pop = el.querySelector('.seller-popover');
+      const isOpen = pop.classList.contains('open');
+      // Close all open popovers first
+      document.querySelectorAll('.seller-popover.open').forEach(p => p.classList.remove('open'));
+      if (!isOpen) pop.classList.add('open');
+    }
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.seller-popover.open').forEach(p => p.classList.remove('open'));
+    });
+    
+    /* Description toggle */
+    function toggleDesc(event, btn) {
+      event.stopPropagation();
+      const card = btn.closest('.product-card');
+      const desc = card.querySelector('.product-desc');
+      const icon = btn.querySelector('.desc-icon');
+      const isOpen = desc.classList.contains('open');
+      desc.classList.toggle('open', !isOpen);
+      icon.textContent = isOpen ? 'info' : 'info';
+      btn.classList.toggle('bg-primary/10', !isOpen);
+      btn.classList.toggle('text-primary', !isOpen);
+    }
+    
+    /* ── Filter helpers ── */
+    let activeCategory2 = 'all'; // alias, in sync with activeCategory
+    
+    function selectCategory(el) {
+      document.querySelectorAll('.cat-pill').forEach(p => {
+        p.querySelector('.cat-icon').classList.remove('bg-primary', 'text-white');
+        p.querySelector('.cat-icon').classList.add('bg-emerald-50', 'text-primary');
+      });
+      el.querySelector('.cat-icon').classList.remove('bg-emerald-50', 'text-primary');
+      el.querySelector('.cat-icon').classList.add('bg-primary', 'text-white');
+      activeCategory = el.dataset.cat;
+      applyFilters();
+    }
+    
+    function applyFilters() {
+      const search = document.getElementById('searchInput').value.toLowerCase().trim();
+      const sort = document.getElementById('sortSelect').value;
+      const minPrice = parseFloat(document.getElementById('priceMin').value) || 0;
+      const maxPrice = parseFloat(document.getElementById('priceMax').value) || Infinity;
+      
+      let filtered = allProducts.filter(p => {
+        const name = (p.name || '').toLowerCase();
+        const seller = ((p.stores?.profiles?.first_name || '') + ' ' + (p.stores?.profiles?.last_name || '')).toLowerCase();
+        const store = (p.stores?.name || '').toLowerCase();
+        const cat = p.category || 'other';
+        const price = Number(p.price);
+        
+        const matchSearch = !search || name.includes(search) || seller.includes(search) || store.includes(search);
+        const matchCat = activeCategory === 'all' || cat === activeCategory;
+        const matchPrice = price >= minPrice && price <= maxPrice;
+        return matchSearch && matchCat && matchPrice;
+      });
+      
+      // Sort
+      filtered.sort((a, b) => {
+        if (sort === 'price-asc') return a.price - b.price;
+        if (sort === 'price-desc') return b.price - a.price;
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+      
+      renderProducts(filtered);
+    }
+    
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('priceMin').value = '';
+      document.getElementById('priceMax').value = '';
+      document.getElementById('sortSelect').value = 'newest';
+      selectCategory(document.querySelector('.cat-pill[data-cat="all"]'));
+    }
+    
+    function escHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    
+    // Boot
+    fetchProducts();
+    
+    /* ── Buy flow ── */
+    let currentProduct = null;
+    
+    function openBuyModal(productId) {
+      const p = allProducts.find(x => x.id === productId);
+      const store = p.stores || {};
+      
+      currentProduct = {
+        id: p.id,
+        name: p.name,
+        price: p.price,
+        seller_id: store.owner_id,
+        file_path: p.file_path,
+      };
+      
+      document.getElementById('buyModalName').textContent = currentProduct.name;
+      document.getElementById('buyModalPrice').textContent = '₦' + Number(currentProduct.price).toLocaleString();
+      document.getElementById('buyBreakdownPrice').textContent = '₦' + Number(currentProduct.price).toLocaleString();
+      document.getElementById('buyBreakdownTotal').textContent = '₦' + Number(currentProduct.price).toLocaleString();
+      document.getElementById('buyerEmail').value = '';
+      document.getElementById('buyAlert').className = 'hidden';
+      document.getElementById('buyModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeBuyModal() {
+      document.getElementById('buyModal').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+    
+    function showBuyAlert(msg, type = 'error') {
+      const el = document.getElementById('buyAlert');
+      el.textContent = msg;
+      el.className = type === 'error' ?
+        'px-4 py-3 rounded-xl text-[13px] font-semibold bg-red-50 text-red-600 border border-red-100' :
+        'px-4 py-3 rounded-xl text-[13px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100';
+    }
+    
+    function initiatePayment() {
+      const email = document.getElementById('buyerEmail').value.trim();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+        return showBuyAlert('Please enter a valid email address.');
+      if (!currentProduct) return;
+      
+      const amountKobo = Math.round(currentProduct.price * 100);
+      
+      const handler = PaystackPop.setup({
+        key: PAYSTACK_PUBLIC_KEY,
+        email: email,
+        amount: amountKobo,
+        currency: 'NGN',
+        ref: 'WB-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8).toUpperCase(),
+        metadata: {
+          product_id: currentProduct.id,
+          product_name: currentProduct.name,
+          seller_id: currentProduct.seller_id,
+          buyer_email: email,
+        },
+        callback: function(response) {
+          // inline async wrapper — fixes the scoping issue
+          (async () => {
+            await handlePaymentSuccess(response.reference, email);
+          })();
+        },
+        onClose: function() {
+          showBuyAlert('Payment cancelled. You can try again.');
+        }
+      });
+      
+      handler.openIframe();
+    }
+    
+    async function handlePaymentSuccess(paystackRef, buyerEmail) {
+      const btn = document.getElementById('payBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spin material-symbols-outlined text-[20px]">progress_activity</span> Confirming…';
+      
+      const amountPaid = Number(currentProduct.price);
+      const platformCut = parseFloat((amountPaid * PLATFORM_CUT_PERCENT / 100).toFixed(2));
+      const sellerCut = parseFloat((amountPaid - platformCut).toFixed(2));
+      
+      // 1. Record the order
+      const { error: orderErr } = await sb.from('orders').insert({
+        product_id: currentProduct.id,
+        seller_id: currentProduct.seller_id,
+        buyer_email: buyerEmail,
+        amount_paid: amountPaid,
+        platform_cut: platformCut,
+        seller_cut: sellerCut,
+        paystack_ref: paystackRef,
+        status: 'completed',
+      });
+      
+      if (orderErr) {
+        console.error('Order insert failed:', orderErr.message);
+        // Still try to credit seller — don't block on order insert failure
+      }
+      
+      // 2. Credit seller wallet via RPC
+      const { error: walletErr } = await sb.rpc('credit_seller_wallet', {
+        p_seller_id: currentProduct.seller_id,
+        p_amount: sellerCut,
+      });
+      
+      if (walletErr) console.error('Wallet credit failed:', walletErr.message);
+      
+      // 3. Get the private file URL and "send" it (in production, do this server-side)
+      // For now we display a success screen with a download link
+      /**const { data: signedData } = await sb.storage
+        .from('product-files')
+        .createSignedUrl(currentProduct.file_path, 60 * 60 * 24); // 24hr link
+        // Show success message with download link
+      const downloadUrl = signedData?.signedUrl || '';
+      **/
+      
+      // 3. Generate download link
+      let downloadUrl = '';
+      if (currentProduct.file_path) {
+        const { data: signedData, error: signedErr } = await sb.storage
+          .from('product-files')
+          .createSignedUrl(currentProduct.file_path, 60 * 60 * 24);
+        if (!signedErr) downloadUrl = signedData?.signedUrl || '';
+      }
+      
+      btn.disabled = false;
+      btn.innerHTML = '<span class="material-symbols-outlined text-[20px]">check_circle</span> Payment Successful!';
+      btn.className = btn.className.replace('bg-primary', 'bg-emerald-600');
+      
+      document.getElementById('buyAlert').innerHTML = `
+    <div class="text-center space-y-3">
+      <span class="material-symbols-outlined text-4xl text-emerald-500 block" style="font-variation-settings:'FILL' 1">check_circle</span>
+      <p class="font-bold text-on-background">Payment confirmed! 🎉</p>
+      <p class="text-slate-500 text-sm">Your product is ready. We've also sent it to <strong>${escHtml(buyerEmail)}</strong>.</p>
+      ${downloadUrl
+        ? `<a href="${downloadUrl}" download target="_blank"
+              class="inline-flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-xl font-button text-sm hover:bg-surface-tint transition-colors">
+              <span class="material-symbols-outlined text-[18px]">download</span> Download Now
+           </a>`
+        : '<p class="text-slate-400 text-sm">Check your email for the download link.</p>'
+      }
+    </div>`;
+      document.getElementById('buyAlert').className = 'px-4 py-4 rounded-xl bg-emerald-50 border border-emerald-100';
+    }
+    
+    function escHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+
+</html>
